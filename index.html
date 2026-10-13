@@ -1,1 +1,782 @@
-index.html
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#FFFBFD">
+<title>บัญชีบ้านเรา</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Mitr:wght@400;500;600&family=IBM+Plex+Sans+Thai+Looped:wght@400;500;600&family=Nunito:wght@600;700;800&display=swap">
+<style>
+/* Layout: a phone-first pocket book — one job per screen, bottom tab bar, entry done one step at a time */
+:root{
+  /* always-light soft pastel: bright and cute, never dark, never neon */
+  --bg:#FFFBFD; --paper:#FFFFFF; --ink:#5A4A63; --muted:#A496AE; --line:#F7EAF2;
+  --accent:#F9B4CF; --accent-ink:#6B3A55; --accent-soft:#FFF0F6; --lilac:#BBA8F0; --lilac-soft:#F4EFFF;
+  --inc:#5CBF9A; --inc-soft:#E9F9F2; --exp:#EE94AC; --exp-soft:#FFEFF3; --warn:#E3B04F; --warn-soft:#FFF7E0;
+  --p1:#FFE1EC; --p2:#ECE4FF; --p3:#DDF0FF; --p4:#DDF7EC; --p5:#FFF4CF; --p6:#FFE8DC; --chip-ink:#5A4A63;
+  --shadow:0 4px 16px rgba(249,180,207,.18);
+  --font-display:"Mitr","IBM Plex Sans Thai Looped",system-ui,sans-serif;
+  --font-body:"IBM Plex Sans Thai Looped",system-ui,"Segoe UI",sans-serif;
+  --font-num:"Nunito","Mitr",system-ui,sans-serif;
+  --r:20px; color-scheme:light;
+}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:15px;line-height:1.55;padding-inline:16px;padding-block:16px 110px}
+.app{max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+h1,h2,h3{font-family:var(--font-display);font-weight:500;margin:0;text-wrap:balance;line-height:1.3}
+h1{font-size:1.45rem} h2{font-size:1.1rem} h3{font-size:.95rem}
+p{margin:0}
+.num{font-family:var(--font-num);font-variant-numeric:tabular-nums;font-weight:700}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--lilac);outline-offset:2px}
+.muted{color:var(--muted)} .small{font-size:.82rem}
+
+/* top bar */
+.top{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.top .title{display:flex;flex-direction:column}
+.status{font-size:.75rem;color:var(--muted);display:flex;align-items:center;gap:6px}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--muted)} .dot.ok{background:var(--inc)}
+.switch{display:flex;align-items:center;gap:2px;background:var(--paper);border-radius:999px;padding:4px;box-shadow:var(--shadow)}
+.switch button{border:0;background:transparent;width:32px;height:32px;border-radius:50%;font-size:1.1rem;color:var(--accent)}
+.switch button:hover{background:var(--accent-soft)}
+.switch strong{font-family:var(--font-display);font-weight:500;min-width:8.5em;text-align:center;font-size:.95rem}
+
+/* cards */
+.card{background:var(--paper);border-radius:var(--r);padding:18px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:12px;min-width:0}
+.card-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.link{border:0;background:transparent;color:var(--accent);font-weight:600;font-size:.85rem;padding:2px 4px}
+.totals{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.tot{border-radius:16px;padding:12px 14px;display:flex;flex-direction:column;gap:2px;min-width:0}
+.tot span{font-size:.78rem;color:var(--chip-ink);opacity:.8}
+.tot b{font-family:var(--font-num);font-size:1.25rem;font-weight:800;color:var(--chip-ink);overflow-wrap:anywhere}
+.tot.inc{background:var(--p4)} .tot.exp{background:var(--p1)} .tot.bal{background:var(--p2)}
+@media (max-width:460px){.totals{grid-template-columns:1fr 1fr}.tot.bal{grid-column:1/-1}}
+
+.acc-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.acc{border:0;text-align:left;border-radius:16px;padding:12px 14px;color:var(--chip-ink);display:flex;flex-direction:column;gap:2px;min-width:0}
+.acc .n{font-weight:600;overflow-wrap:anywhere}
+.acc .s{font-size:.75rem;opacity:.75}
+.acc .b{font-family:var(--font-num);font-weight:800;font-size:1.1rem}
+.acc.sel{outline:3px solid var(--accent);outline-offset:2px}
+
+.bars{display:flex;flex-direction:column;gap:10px;margin:0;padding:0;list-style:none}
+.bar{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:3px 10px;font-size:.88rem}
+.bar .t{height:9px;grid-column:1/-1;background:var(--bg);border-radius:6px;overflow:hidden}
+.bar .t i{display:block;height:100%;border-radius:6px}
+.bar .v{font-family:var(--font-num);font-weight:700}
+.bar .p{color:var(--muted);font-size:.75rem;margin-left:4px;font-weight:600}
+.bar .note{grid-column:1/-1;font-size:.75rem}
+
+.seg{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;background:var(--bg);border-radius:14px;padding:5px}
+.seg.two{grid-template-columns:repeat(2,1fr)}
+.seg button{border:0;border-radius:10px;padding:9px 6px;background:transparent;font-weight:600;color:var(--muted)}
+.seg button[aria-pressed="true"]{background:var(--paper);color:var(--ink);box-shadow:var(--shadow)}
+.seg button[aria-pressed="true"].e{background:var(--p1);color:var(--chip-ink)}
+.seg button[aria-pressed="true"].i{background:var(--p4);color:var(--chip-ink)}
+.seg button[aria-pressed="true"].t{background:var(--p3);color:var(--chip-ink)}
+
+/* list */
+.day h3{font-size:.82rem;color:var(--muted);font-weight:500;padding:8px 0 4px;display:flex;justify-content:space-between;gap:8px}
+.item{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:2px 12px;align-items:center;padding:10px 0;border-top:1px solid var(--line)}
+.ico{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;font-weight:700;color:var(--chip-ink);font-size:.8rem}
+.item .what{font-weight:600;overflow-wrap:anywhere}
+.item .meta{font-size:.78rem;color:var(--muted);overflow-wrap:anywhere}
+.item .amt{font-family:var(--font-num);font-weight:800;text-align:right;white-space:nowrap}
+.amt.income{color:var(--inc)} .amt.expense{color:var(--exp)} .amt.transfer{color:var(--lilac)}
+.ops{grid-column:2/-1;display:flex;gap:4px;justify-content:flex-end}
+.ops button{border:0;background:transparent;color:var(--muted);font-size:.78rem;padding:3px 8px;border-radius:8px}
+.ops button:hover{background:var(--bg);color:var(--ink)}
+.ops button.danger{color:var(--exp);background:var(--exp-soft)}
+.filters{display:flex;flex-wrap:wrap;gap:8px}
+.filters select{flex:1 1 130px;width:auto}
+.empty{border:2px dashed var(--line);border-radius:16px;padding:24px 16px;text-align:center;color:var(--muted);display:flex;flex-direction:column;gap:8px;align-items:center}
+.empty strong{color:var(--ink);font-family:var(--font-display);font-weight:500}
+
+/* forms */
+input,select,textarea{width:100%;background:var(--bg);border:2px solid var(--line);border-radius:12px;padding:10px 12px;min-width:0}
+input:focus,select:focus,textarea:focus{border-color:var(--accent);outline:none}
+.field{display:flex;flex-direction:column;gap:5px;min-width:0}
+.field label{font-size:.82rem;color:var(--muted);font-weight:500}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:420px){.row2{grid-template-columns:1fr}}
+.btn{border:0;border-radius:14px;padding:12px 16px;font-weight:600;background:var(--bg);color:var(--ink)}
+.btn.primary{background:var(--accent);color:var(--accent-ink)}
+.btn.primary:disabled{opacity:.45;cursor:not-allowed}
+.btn.ghost{background:transparent;color:var(--muted)}
+.btn.danger{background:var(--exp-soft);color:var(--exp)}
+.btn.block{width:100%}
+.btns{display:flex;gap:8px;flex-wrap:wrap}
+.btns .btn{flex:1}
+.addline{display:flex;gap:8px}
+.addline input{flex:1}
+
+/* wizard */
+.wz-head{display:flex;align-items:center;gap:10px}
+.wz-head .back{border:0;width:38px;height:38px;border-radius:12px;background:var(--bg);font-size:1.2rem;color:var(--accent);flex:none}
+.progress{display:flex;gap:6px}
+.progress i{flex:1;height:6px;border-radius:3px;background:var(--line)}
+.progress i.on{background:var(--accent)}
+.amount-box{display:flex;align-items:center;gap:8px;background:var(--bg);border-radius:18px;padding:10px 16px;border:2px solid var(--line)}
+.amount-box:focus-within{border-color:var(--accent)}
+.amount-box span{font-family:var(--font-num);font-size:1.8rem;color:var(--muted);font-weight:800}
+.amount-box input{border:0;background:transparent;padding:6px 0;font-family:var(--font-num);font-size:2.2rem;font-weight:800}
+.chips{display:grid;grid-template-columns:repeat(auto-fill,minmax(128px,1fr));gap:8px}
+.chip{border:0;border-radius:14px;padding:12px 10px;font-weight:600;color:var(--chip-ink);text-align:center;position:relative;overflow-wrap:anywhere;min-height:52px}
+.chip.sel{outline:3px solid var(--accent);outline-offset:2px}
+.chip .badge,.acc .badge{position:absolute;top:-7px;right:6px;background:var(--lilac);color:var(--paper);font-size:.65rem;border-radius:999px;padding:1px 7px;font-weight:600}
+.acc{position:relative}
+.chip.plain{background:var(--bg);color:var(--muted)}
+.sum-row{display:grid;grid-template-columns:7em minmax(0,1fr) auto;gap:8px;align-items:center;padding:10px 0;border-top:1px solid var(--line)}
+.sum-row .k{color:var(--muted);font-size:.85rem}
+.sum-row .v{font-weight:600;overflow-wrap:anywhere}
+.big-amt{font-family:var(--font-num);font-size:2rem;font-weight:800;text-align:center}
+.done{background:var(--inc-soft);color:var(--inc);border-radius:14px;padding:10px 14px;font-weight:600;font-size:.9rem}
+
+.pills{display:flex;flex-wrap:wrap;gap:8px}
+.pill{border:0;border-radius:999px;padding:8px 14px;font-weight:500;color:var(--chip-ink);font-size:.9rem;line-height:1.3}
+.pill small{opacity:.7;font-size:.72rem}
+.pill.sel{outline:2.5px solid var(--accent);outline-offset:2px;font-weight:600}
+.pill.plain{background:transparent;border:1.5px dashed var(--line);color:var(--muted)}
+.grp{display:flex;flex-direction:column;gap:8px}
+.grp-label{font-size:.82rem;color:var(--muted);font-weight:500}
+.quick{display:flex;flex-direction:column;gap:8px;background:var(--bg);border-radius:14px;padding:10px}
+.quick input,.quick select{background:var(--paper)}
+.btn.big{padding:15px;font-size:1.05rem}
+.bk{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;font-family:var(--font-num);font-weight:800;font-size:.72rem;letter-spacing:-.02em;flex:none;line-height:1}
+.bk.l3{font-size:.62rem} .bk.l4{font-size:.52rem}
+.bk.sm{width:22px;height:22px;font-size:.6rem} .bk.sm.l3{font-size:.48rem} .bk.sm.l4{font-size:.4rem}
+.pill{display:inline-flex;align-items:center;gap:6px}
+.acc .n{display:flex;align-items:center;gap:8px}
+.bankgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(86px,1fr));gap:8px}
+.bankopt{border:0;background:var(--bg);border-radius:14px;padding:10px 6px;display:flex;flex-direction:column;align-items:center;gap:6px;font-size:.74rem;line-height:1.25;color:var(--ink);text-align:center}
+.bankopt .bk{width:40px;height:40px;font-size:.8rem} .bankopt .bk.l3{font-size:.7rem} .bankopt .bk.l4{font-size:.6rem}
+.bankopt.sel{outline:2.5px solid var(--accent);outline-offset:1px;background:var(--accent-soft)}
+.quick .bankopt{background:var(--paper)}
+/* settings */
+.menu{display:flex;flex-direction:column}
+.menu button{border:0;background:transparent;display:grid;grid-template-columns:44px minmax(0,1fr) auto;gap:12px;align-items:center;text-align:left;padding:12px 4px;border-top:1px solid var(--line)}
+.menu button:first-child{border-top:0}
+.menu .mi{width:44px;height:44px;border-radius:14px;display:grid;place-items:center;font-size:1.1rem;color:var(--chip-ink)}
+.menu .mt{font-weight:600} .menu .md{font-size:.8rem;color:var(--muted)}
+.menu .arrow{color:var(--muted)}
+.tags{display:flex;flex-wrap:wrap;gap:8px}
+.tag{display:inline-flex;align-items:center;gap:2px;border-radius:999px;padding:5px 5px 5px 12px;color:var(--chip-ink);font-weight:500;font-size:.9rem}
+.tag button{border:0;background:rgba(255,255,255,.55);width:24px;height:24px;border-radius:50%;color:var(--chip-ink);margin-left:4px}
+.swatches{display:flex;gap:8px;flex-wrap:wrap}
+.sw{width:36px;height:36px;border-radius:50%;border:3px solid transparent}
+.sw.sel{border-color:var(--ink)}
+.budget-row{display:grid;grid-template-columns:minmax(0,1fr) 130px;gap:10px;align-items:center}
+
+/* chart */
+.chart-wrap{overflow-x:auto}
+.chart-wrap svg{display:block;min-width:560px;width:100%;height:auto}
+.chart-wrap text{fill:var(--muted);font-family:var(--font-body);font-size:11px}
+.grid-line{stroke:var(--line);stroke-width:1}
+.b-inc{fill:var(--inc)} .b-exp{fill:var(--exp)}
+.legend{display:flex;gap:14px;font-size:.82rem;color:var(--muted)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:middle}
+.tbl-wrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.88rem}
+th,td{padding:8px 6px;text-align:right;border-top:1px solid var(--line);white-space:nowrap}
+th:first-child,td:first-child{text-align:left}
+th{color:var(--muted);font-weight:500;font-size:.78rem}
+td.num{font-weight:700}
+
+/* bottom nav */
+nav.tabs{position:fixed;left:0;right:0;bottom:0;background:var(--paper);box-shadow:0 -4px 20px rgba(0,0,0,.06);padding:8px 8px calc(8px + env(safe-area-inset-bottom,0px));z-index:5}
+nav.tabs .in{max-width:720px;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr);align-items:end}
+nav.tabs button{border:0;background:transparent;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:.72rem;color:var(--muted);padding:4px 0}
+nav.tabs button svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+nav.tabs button[aria-current="page"]{color:var(--accent);font-weight:600}
+nav.tabs .add span.plus{width:54px;height:54px;border-radius:18px;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;margin-top:-26px;box-shadow:var(--shadow);font-size:1.8rem;line-height:1}
+.toast{position:fixed;left:50%;bottom:calc(92px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:12px;font-size:.88rem;max-width:calc(100% - 32px);z-index:6}
+[hidden]{display:none!important}
+:root{padding-top:env(safe-area-inset-top,0px)}
+body{margin:0}
+</style>
+</head>
+<body>
+
+<div class="app" id="app"></div>
+<nav class="tabs" aria-label="เมนูหลัก"><div class="in" id="nav"></div></nav>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+(function(){
+const TH_MONTHS=["มกราคม","กุมภาพันธ์","มีนาคม","เมษายน","พฤษภาคม","มิถุนายน","กรกฎาคม","สิงหาคม","กันยายน","ตุลาคม","พฤศจิกายน","ธันวาคม"];
+const TH_SHORT=["ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค."];
+const TH_DAYS=["อาทิตย์","จันทร์","อังคาร","พุธ","พฤหัสบดี","ศุกร์","เสาร์"];
+const PAL=["--p1","--p2","--p3","--p4","--p5","--p6"];
+const ACC_KINDS=["บัญชีธนาคาร","บัตรเครดิต","e-Wallet"];
+const BANKS=["กสิกรไทย","ไทยพาณิชย์","กรุงเทพ","กรุงไทย","กรุงศรีอยุธยา","ทหารไทยธนชาต (ttb)","ออมสิน","ธ.ก.ส.","อาคารสงเคราะห์ (ธอส.)","ยูโอบี","ซีไอเอ็มบี ไทย","เกียรตินาคินภัทร","แลนด์ แอนด์ เฮ้าส์","ไอซีบีซี (ไทย)","อิสลามแห่งประเทศไทย","อื่นๆ"];
+const CARDS=["กสิกรไทย","ไทยพาณิชย์","กรุงเทพ","กรุงไทย (KTC)","กรุงศรี","ทหารไทยธนชาต (ttb)","ยูโอบี","ซิตี้แบงก์","เซ็นทรัล เดอะวัน","อิออน","ยูเอ็มเอ็กซ์","อื่นๆ"];
+const WALLETS=["TrueMoney Wallet","ShopeePay","LINE Pay","เป๋าตัง","Lazada Wallet","PayPal","อื่นๆ"];
+const BRAND={
+  "กสิกรไทย":["K","#138F2D"],"ไทยพาณิชย์":["SCB","#4E2A84"],"กรุงเทพ":["BBL","#1E4598"],"กรุงไทย":["KTB","#1BA5E1"],"กรุงศรีอยุธยา":["BAY","#FEC43B","#4A3800"],
+  "ทหารไทยธนชาต (ttb)":["ttb","#0B4EA2"],"ออมสิน":["GSB","#EB198D"],"ธ.ก.ส.":["BAAC","#4B9B2E"],"อาคารสงเคราะห์ (ธอส.)":["GHB","#F57F29"],"ยูโอบี":["UOB","#0B3B8C"],
+  "ซีไอเอ็มบี ไทย":["CIMB","#C8102E"],"เกียรตินาคินภัทร":["KKP","#594F74"],"แลนด์ แอนด์ เฮ้าส์":["LHB","#6D6E71"],"ไอซีบีซี (ไทย)":["ICBC","#C4161C"],"อิสลามแห่งประเทศไทย":["iBank","#00703C"],
+  "กรุงไทย (KTC)":["KTC","#D71920"],"กรุงศรี":["BAY","#FEC43B","#4A3800"],"ซิตี้แบงก์":["Citi","#056DAE"],"เซ็นทรัล เดอะวัน":["The1","#2B2B2B"],"อิออน":["AEON","#B60081"],"ยูเอ็มเอ็กซ์":["UMAY","#E4002B"],
+  "TrueMoney Wallet":["TMN","#F26722"],"ShopeePay":["SPay","#EE4D2D"],"LINE Pay":["LINE","#06C755"],"เป๋าตัง":["ป","#1BA5E1"],"Lazada Wallet":["LZD","#0F146D"],"PayPal":["PP","#003087"]
+};
+function bankIcon(bank,kind,cls){
+  let b=BRAND[bank];
+  if(kind==="เงินสด")b=["฿","var(--p4)","var(--chip-ink)"];
+  if(!b)b=[(bank||"?").replace(/^บัตร\s*/,"").slice(0,1),kind==="บัตรเครดิต"?"var(--p5)":"var(--p2)","var(--chip-ink)"];
+  const t=b[0];
+  return h("span",{class:"bk"+(cls?" "+cls:"")+(t.length>=4?" l4":t.length===3?" l3":""),style:"background:"+b[1]+";color:"+(b[2]||"#fff"),"aria-hidden":"true"},t);
+}
+const accIcon=(a,cls)=>a?bankIcon(a.bank||a.name,a.kind,cls):null;
+const needMsg=kind=>kind==="บัตรเครดิต"?"ตั้งชื่อบัตรก่อน":"เลือกธนาคารก่อน";
+function bankPicker(kind,value,onpick){
+  return h("div",{class:"bankgrid",role:"group","aria-label":kind==="e-Wallet"?"เลือกผู้ให้บริการ":"เลือกธนาคาร"},bankOpts(kind).map(b=>
+    h("button",{type:"button",class:"bankopt"+(b===value?" sel":""),"aria-pressed":String(b===value),onclick:()=>onpick(b)},bankIcon(b,kind),h("span",null,b))));
+}
+const bankOpts=kind=>kind==="บัตรเครดิต"?CARDS:kind==="e-Wallet"?WALLETS:BANKS;
+function bankSelect(id,kind,value,onch){
+  const opts=bankOpts(kind);const list=value&&!opts.includes(value)?[value,...opts]:opts;
+  return h("select",{id,"aria-label":kind==="e-Wallet"?"เลือกผู้ให้บริการ":"เลือกธนาคาร",onchange:e=>onch(e.target.value)},
+    h("option",{value:"",selected:value?null:true},kind==="e-Wallet"?"เลือกผู้ให้บริการ…":"เลือกธนาคาร…"),
+    list.map(b=>h("option",{value:b,selected:b===value?true:null},b)));
+}
+function buildAccount(d){
+  const kind=d.kind||"บัญชีธนาคาร",bank=kind==="เงินสด"||kind==="บัตรเครดิต"?"":(d.bank||"");
+  const nick=(d.name||"").trim();
+  if(kind==="บัตรเครดิต"&&!nick)return null;
+  if(kind!=="เงินสด"&&!bank&&!nick)return null;
+  const name=nick||(kind==="เงินสด"?"เงินสด":kind==="บัตรเครดิต"?"บัตร "+bank:bank);
+  return {id:d.id||store.mint("accounts"),name,kind,bank,number:(d.number||"").replace(/\D/g,"").slice(-4),opening:Number(d.opening)||0,color:d.color||PAL[S.accounts.length%PAL.length],createdAt:d.createdAt||Date.now()};
+}
+const DEFAULT_LISTS={
+  members:[],
+  incomeSources:["เงินเดือน","ธุรกิจ/ค้าขาย","ค่าคอมมิชชั่น/แอฟฟิลิเอต","โบนัส","ดอกเบี้ย/ปันผล","อื่นๆ"],
+  expenseCats:["อาหาร/กับข้าว","ค่าน้ำ","ค่าไฟ","ค่าเน็ต/มือถือ","ค่าเดินทาง/น้ำมัน","ค่าเทอม/การศึกษา","ค่ารักษาพยาบาล","ผ่อนบ้าน/ค่าเช่า","ผ่อนรถ","ของใช้ในบ้าน","เสื้อผ้า","ประกัน","บันเทิง","อื่นๆ"]
+};
+const TYPE_TH={expense:"รายจ่าย",income:"รายรับ",transfer:"โอนระหว่างบัญชี"};
+
+/* ---------- state ---------- */
+const S={txns:[],accounts:[],lists:clone(DEFAULT_LISTS),budgets:{cats:{}}};
+const now=new Date();
+const UI={tab:"home",ym:{y:now.getFullYear(),m:now.getMonth()},year:now.getFullYear(),
+  filt:{type:"",who:"",acc:""},pendingDelete:null,setPage:null,acctDraft:null,budgetDraft:null,justSaved:null};
+let wz=null;
+let downloadsNs=null;
+
+function clone(o){return JSON.parse(JSON.stringify(o))}
+const $=id=>document.getElementById(id);
+const pad=n=>String(n).padStart(2,"0");
+const todayStr=()=>{const d=new Date();return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate())};
+const fmt=n=>"฿"+Number(n||0).toLocaleString("th-TH",{maximumFractionDigits:2});
+const fmtS=n=>(n<0?"−":"")+fmt(Math.abs(n));
+const colorOf=(name,list)=>{const i=Math.max(0,(list||[]).indexOf(name));return "var("+PAL[i%PAL.length]+")"};
+function lsGet(k,d){try{const v=localStorage.getItem("fl2-"+k);return v?JSON.parse(v):d}catch(e){return d}}
+function lsSet(k,v){try{localStorage.setItem("fl2-"+k,JSON.stringify(v))}catch(e){}}
+function toast(msg){const t=$("toast");t.textContent=msg;t.hidden=false;clearTimeout(toast._t);toast._t=setTimeout(()=>{t.hidden=true},2600)}
+function failMsg(e){if(e&&e.code==="bad_key")return "รหัสเชื่อมต่อไม่ถูกต้อง ตรวจที่ ตั้งค่า → เชื่อม Google Sheets";if(e&&e.code==="network")return "ต่อ Google Sheets ไม่ได้ ตรวจอินเทอร์เน็ตแล้วลองอีกครั้ง";return e&&e.code==="invalid_argument"?"คุณไม่มีสิทธิ์แก้ไข ขอสิทธิ์ Contributor จากเจ้าของหน้านี้":e&&e.code==="quota_exceeded"?"พื้นที่เก็บข้อมูลเต็ม ลบรายการเก่าบางส่วนก่อน":"บันทึกไม่สำเร็จ ลองอีกครั้ง"}
+function h(tag,props,...kids){
+  const el=document.createElement(tag);
+  if(props)for(const k in props){const v=props[k];if(v==null||v===false)continue;
+    if(k==="class")el.className=v;else if(k==="style")el.style.cssText=v;else if(k==="html")el.innerHTML=v;
+    else if(k.slice(0,2)==="on")el.addEventListener(k.slice(2),v);else if(k==="value")el.value=v;else el.setAttribute(k,v===true?"":v)}
+  for(const c of kids.flat(3)){if(c==null||c===false)continue;el.append(c.nodeType?c:String(c))}
+  return el;
+}
+const CASH={id:"cash",name:"เงินสด",kind:"เงินสด",bank:"",number:"",opening:0,color:"--p4",createdAt:0};
+const accById=id=>id==="cash"?CASH:S.accounts.find(a=>a.id===id);
+const accName=id=>{const a=accById(id);return a?a.name:(id?"บัญชีที่ลบแล้ว":"-")};
+const accColor=id=>{const a=accById(id);return a&&a.color?"var("+a.color+")":"var(--p3)"};
+function sortedAccounts(){return S.accounts.slice().sort((a,b)=>(a.createdAt||0)-(b.createdAt||0))}
+function balanceOf(id){
+  const a=accById(id);let b=a?Number(a.opening)||0:0;
+  for(const t of S.txns){const v=Number(t.amount)||0;
+    if(t.type==="income"&&t.acc===id)b+=v;
+    else if(t.type==="expense"&&t.acc===id)b-=v;
+    else if(t.type==="transfer"){if(t.acc===id)b-=v;if(t.toAcc===id)b+=v}}
+  return b;
+}
+const monthKey=(y,m)=>y+"-"+pad(m+1);
+const inMonth=(y,m)=>S.txns.filter(t=>(t.date||"").slice(0,7)===monthKey(y,m));
+
+/* ---------- storage: shared db, or this browser when db is unavailable ---------- */
+const store={
+  mode:"local",db:null,q:{},sc:null,pending:0,lastSig:"",
+  async call(payload,sc){
+    sc=sc||this.sc;let r;
+    try{r=await fetch(sc.url,{method:"POST",body:JSON.stringify(Object.assign({key:sc.key},payload))})}catch(e){throw {code:"network"}}
+    let j;try{j=await r.json()}catch(e){throw {code:"network"}}
+    if(!j.ok)throw {code:j.error||"error"};return j;
+  },
+  applyAll(d){
+    const sig=JSON.stringify(d);if(sig===this.lastSig)return;this.lastSig=sig;
+    S.txns=d.txns||[];S.accounts=d.accounts||[];
+    const l=d.lists||{};S.lists={};for(const k in DEFAULT_LISTS)S.lists[k]=Array.isArray(l[k])?l[k].slice():DEFAULT_LISTS[k].slice();
+    S.budgets={cats:Object.assign({},(d.budgets&&d.budgets.cats)||{})};renderAll();
+  },
+  async pull(){
+    if(this.pending>0)return;
+    try{const j=await this.call({op:"all"});if(this.pending>0)return;this.applyAll(j.data);setStatus(true,"เชื่อม Google Sheets แล้ว · ทุกเครื่องเห็นข้อมูลเดียวกัน")}
+    catch(e){setStatus(false,failMsg(e))}
+  },
+  async remote(payload){this.pending++;try{await this.call(payload)}finally{this.pending--}},
+  async init(){
+    const sc=lsGet("sheet",null);
+    if(sc&&sc.url&&sc.key){
+      this.mode="sheet";this.sc=sc;setStatus(false,"กำลังโหลดจาก Google Sheets…");renderAll();
+      await this.pull();
+      setInterval(()=>{if(!document.hidden)this.pull()},30000);
+      document.addEventListener("visibilitychange",()=>{if(!document.hidden)this.pull()});
+      return;
+    }
+    let db=null;
+    try{if(window.claude&&window.claude.use)db=await window.claude.use("db")}catch(e){db=null}
+    try{if(window.claude&&window.claude.use)downloadsNs=await window.claude.use("downloads")}catch(e){downloadsNs=null}
+    if(db){
+      this.mode="db";this.db=db;setStatus(true,"บันทึกออนไลน์ · ทุกคนในบ้านเห็นข้อมูลเดียวกัน");
+      const err=e=>setStatus(false,"เชื่อมต่อไม่ได้ ("+e.code+") ลองรีเฟรชหน้า");
+      db.collection("txns").onSnapshot(s=>{S.txns=s.docs.map(d=>Object.assign({},d.data(),{id:d.id}));renderAll()},err);
+      db.collection("accounts").onSnapshot(s=>{S.accounts=s.docs.map(d=>Object.assign({},d.data(),{id:d.id}));renderAll()},err);
+      db.doc("settings/lists").onSnapshot(s=>{const d=s.exists?s.data():{};S.lists={};for(const k in DEFAULT_LISTS)S.lists[k]=Array.isArray(d[k])?d[k].slice():DEFAULT_LISTS[k].slice();renderAll()},err);
+      db.doc("settings/budgets").onSnapshot(s=>{const d=s.exists?s.data():{};S.budgets={cats:Object.assign({},d.cats||{})};renderAll()},err);
+    }else{
+      setStatus(false,"ยังไม่ได้เชื่อม Google Sheets · ข้อมูลอยู่ในเครื่องนี้เท่านั้น");
+      S.txns=lsGet("txns",[]);S.accounts=lsGet("accounts",[]);S.lists=Object.assign(clone(DEFAULT_LISTS),lsGet("lists",{}));S.budgets=lsGet("budgets",{cats:{}});
+      renderAll();
+    }
+  },
+  mint(coll){return this.mode==="db"?this.db.collection(coll).doc().id:"l"+Date.now().toString(36)+Math.random().toString(36).slice(2,7)},
+  async put(coll,obj){
+    const arr=S[coll],i=arr.findIndex(x=>x.id===obj.id),prev=i>=0?arr[i]:null;
+    if(i>=0)arr[i]=obj;else arr.push(obj);renderAll();
+    try{if(this.mode==="sheet"){const o=coll==="txns"?Object.assign({},obj,{accName:accName(obj.acc),toAccName:obj.toAcc?accName(obj.toAcc):""}):obj;await this.remote({op:"put",coll,obj:o})}else if(this.mode==="db"){const b=Object.assign({},obj);delete b.id;await this.db.collection(coll).doc(obj.id).set(b)}else lsSet(coll,arr)}
+    catch(e){const j=arr.findIndex(x=>x.id===obj.id);if(prev)arr[j]=prev;else if(j>=0)arr.splice(j,1);renderAll();throw e}
+  },
+  async del(coll,id){
+    const arr=S[coll],i=arr.findIndex(x=>x.id===id);if(i<0)return;const prev=arr[i];arr.splice(i,1);renderAll();
+    try{if(this.mode==="sheet")await this.remote({op:"del",coll,id});else if(this.mode==="db")await this.db.collection(coll).doc(id).delete();else lsSet(coll,arr)}
+    catch(e){arr.push(prev);renderAll();throw e}
+  },
+  setDoc(name,obj){
+    const prev=S[name];S[name]=obj;renderAll();
+    const run=async()=>{try{if(this.mode==="sheet")await this.remote({op:"setDoc",name,obj});else if(this.mode==="db")await this.db.doc("settings/"+name).set(obj);else lsSet(name,obj)}catch(e){S[name]=prev;renderAll();toast(failMsg(e))}};
+    this.q[name]=(this.q[name]||Promise.resolve()).then(run);return this.q[name];
+  }
+};
+let statusText="กำลังเชื่อมต่อ…",statusOk=false;
+function setStatus(ok,msg){statusOk=ok;statusText=msg;const d=$("dot"),s=$("statusText");if(d){d.className="dot"+(ok?" ok":"");s.textContent=msg}}
+function addToList(key,v){v=(v||"").trim();if(!v)return false;if(S.lists[key].includes(v)){toast("มี “"+v+"” อยู่แล้ว");return false}
+  const next=clone(S.lists);next[key].push(v);store.setDoc("lists",next);return true}
+function removeFromList(key,v){const next=clone(S.lists);next[key]=next[key].filter(x=>x!==v);store.setDoc("lists",next)}
+
+/* ---------- render shell ---------- */
+function renderAll(){
+  const app=$("app");
+  const a=document.activeElement,fid=a&&a.id&&app.contains(a)?a.id:null,sel=fid&&"selectionStart" in a?[a.selectionStart,a.selectionEnd]:null;
+  app.replaceChildren(...[topBar(),...(VIEWS[UI.tab]())].filter(Boolean));
+  renderNav();
+  if(fid){const el=$(fid);if(el){el.focus({preventScroll:true});if(sel)try{el.setSelectionRange(sel[0],sel[1])}catch(e){}}}
+}
+function go(tab){UI.tab=tab;UI.pendingDelete=null;if(tab==="settings")UI.setPage=null;renderAll();window.scrollTo(0,0)}
+function topBar(){
+  const sw=(UI.tab==="home"||UI.tab==="history")?monthSwitch():UI.tab==="year"?yearSwitch():null;
+  return h("header",{class:"top"},
+    h("div",{class:"title"},h("h1",null,"บัญชีบ้านเรา"),h("span",{class:"status"},h("span",{class:"dot"+(statusOk?" ok":""),id:"dot"}),h("span",{id:"statusText"},statusText))),
+    sw);
+}
+function monthSwitch(){return h("div",{class:"switch",role:"group","aria-label":"เลือกเดือน"},
+  h("button",{type:"button","aria-label":"เดือนก่อน",onclick:()=>{const m=UI.ym;m.m--;if(m.m<0){m.m=11;m.y--}renderAll()}},"‹"),
+  h("strong",null,TH_MONTHS[UI.ym.m]+" "+(UI.ym.y+543)),
+  h("button",{type:"button","aria-label":"เดือนถัดไป",onclick:()=>{const m=UI.ym;m.m++;if(m.m>11){m.m=0;m.y++}renderAll()}},"›"))}
+function yearSwitch(){return h("div",{class:"switch",role:"group","aria-label":"เลือกปี"},
+  h("button",{type:"button","aria-label":"ปีก่อน",onclick:()=>{UI.year--;renderAll()}},"‹"),
+  h("strong",null,"ปี "+(UI.year+543)),
+  h("button",{type:"button","aria-label":"ปีถัดไป",onclick:()=>{UI.year++;renderAll()}},"›"))}
+const ICONS={
+  home:'<svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>',
+  history:'<svg viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>',
+  year:'<svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>',
+  settings:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>'
+};
+function renderNav(){
+  const item=(tab,label)=>{const b=h("button",{type:"button","aria-current":UI.tab===tab?"page":null,onclick:()=>go(tab)});b.innerHTML=ICONS[tab];b.append(label);return b};
+  $("nav").replaceChildren(item("home","หน้าแรก"),item("history","ประวัติ"),
+    h("button",{type:"button",class:"add","aria-current":UI.tab==="add"?"page":null,onclick:()=>{if(wz.editingId)wz=freshWizard(wz.type);UI.focusAmount=true;go("add")}},h("span",{class:"plus"},"+"),"จดรายการ"),
+    item("year","สรุปปี"),item("settings","ตั้งค่า"));
+}
+
+/* ---------- home ---------- */
+function barsEl(map,total,colorFn){
+  const rows=Object.entries(map).sort((a,b)=>b[1]-a[1]);
+  if(!rows.length)return h("p",{class:"muted small"},"ยังไม่มีรายการเดือนนี้");
+  return h("ul",{class:"bars"},rows.map(([k,v])=>{const pct=total?Math.round(v/total*100):0;
+    return h("li",{class:"bar"},h("span",null,k),h("span",{class:"v"},fmt(v),h("span",{class:"p"},pct+"%")),
+      h("span",{class:"t"},h("i",{style:"width:"+Math.max(pct,2)+"%;background:"+colorFn(k)})))}));
+}
+function homeView(){
+  const out=[];const {y,m}=UI.ym;const rows=inMonth(y,m);
+  if(store.mode==="local"){
+    out.push(h("section",{class:"card",style:"background:var(--p5)"},
+      h("h2",null,"เชื่อม Google Sheets"),
+      h("p",{class:"small"},"ตอนนี้ข้อมูลอยู่ในเครื่องนี้เครื่องเดียว เชื่อม Google Sheets แล้วทุกเครื่องจะเห็นข้อมูลเดียวกัน และเปิดดูในชีตได้"),
+      h("button",{type:"button",class:"btn primary",onclick:()=>{UI.tab="settings";UI.setPage="sheet";renderAll()}},"ตั้งค่าการเชื่อมต่อ")));
+  }
+  if(!S.lists.members.length||!S.accounts.length){
+    out.push(h("section",{class:"card",style:"background:var(--lilac-soft)"},
+      h("h2",null,"เริ่มใช้งาน 2 ขั้นตอน"),
+      h("p",{class:"small"},"บอกแอปก่อนว่าบ้านเรามีใครบ้าง และใช้บัญชีอะไร แล้วค่อยเริ่มจดรายการ"),
+      h("div",{class:"btns"},
+        h("button",{type:"button",class:"btn"+(S.lists.members.length?"":" primary"),onclick:()=>{UI.tab="settings";UI.setPage="members";renderAll()}},(S.lists.members.length?"✓ ":"1. ")+"เพิ่มคนในบ้าน"),
+        h("button",{type:"button",class:"btn"+(S.accounts.length?"":" primary"),onclick:()=>{UI.tab="settings";UI.setPage="accounts";UI.acctDraft=newAcctDraft();renderAll()}},(S.accounts.length?"✓ ":"2. ")+"เพิ่มบัญชี / บัตร"))));
+  }
+  let inc=0,exp=0;const src={},cat={},who={};
+  rows.forEach(t=>{const a=Number(t.amount)||0;
+    if(t.type==="income"){inc+=a;src[t.cat]=(src[t.cat]||0)+a}
+    else if(t.type==="expense"){exp+=a;cat[t.cat]=(cat[t.cat]||0)+a;const w=t.who||"ไม่ระบุ";who[w]=(who[w]||0)+a}});
+  out.push(h("section",{class:"totals","aria-label":"สรุปเดือนนี้"},
+    h("div",{class:"tot inc"},h("span",null,"รายรับ"),h("b",null,fmt(inc))),
+    h("div",{class:"tot exp"},h("span",null,"รายจ่าย"),h("b",null,fmt(exp))),
+    h("div",{class:"tot bal"},h("span",null,"คงเหลือเดือนนี้"),h("b",null,fmtS(inc-exp)))));
+  if(S.accounts.length){
+    const total=S.accounts.reduce((s,a)=>s+balanceOf(a.id),0);
+    out.push(h("section",{class:"card"},
+      h("div",{class:"card-head"},h("h2",null,"เงินในแต่ละบัญชี"),h("span",{class:"num"},fmtS(total))),
+      h("div",{class:"acc-row"},sortedAccounts().map(a=>accCard(a,null)))));
+  }
+  const bcats=Object.entries(S.budgets.cats||{}).filter(([,v])=>Number(v)>0);
+  if(bcats.length){
+    out.push(h("section",{class:"card"},
+      h("div",{class:"card-head"},h("h2",null,"งบเดือนนี้"),h("button",{type:"button",class:"link",onclick:()=>{UI.tab="settings";UI.setPage="budgets";UI.budgetDraft=null;renderAll()}},"แก้งบ")),
+      h("ul",{class:"bars"},bcats.map(([c,b])=>{b=Number(b);const used=cat[c]||0,pct=Math.round(used/b*100);
+        const col=pct>100?"var(--exp)":pct>=80?"var(--warn)":"var(--inc)";
+        const note=pct>100?h("span",{class:"note",style:"color:var(--exp)"},"เกินงบ "+fmt(used-b)):pct>=80?h("span",{class:"note",style:"color:var(--warn)"},"ใกล้เต็มงบ เหลือ "+fmt(b-used)):h("span",{class:"note muted"},"เหลือ "+fmt(b-used));
+        return h("li",{class:"bar"},h("span",null,c),h("span",{class:"v"},fmt(used)+" / "+fmt(b)),h("span",{class:"t"},h("i",{style:"width:"+Math.min(Math.max(pct,2),100)+"%;background:"+col})),note)}))));
+  }
+  out.push(h("section",{class:"card"},h("h2",null,"จ่ายค่าอะไรบ้าง"),barsEl(cat,exp,k=>colorOf(k,S.lists.expenseCats))));
+  out.push(h("section",{class:"card"},h("h2",null,"จ่ายของใคร"),barsEl(who,exp,k=>colorOf(k,S.lists.members))));
+  out.push(h("section",{class:"card"},h("h2",null,"รายได้มาจากไหน"),barsEl(src,inc,k=>colorOf(k,S.lists.incomeSources))));
+  const recent=rows.slice().sort(byNewest).slice(0,5);
+  out.push(h("section",{class:"card"},
+    h("div",{class:"card-head"},h("h2",null,"ล่าสุด"),rows.length>5?h("button",{type:"button",class:"link",onclick:()=>go("history")},"ดูทั้งหมด ("+rows.length+")"):null),
+    recent.length?h("div",null,recent.map(t=>itemEl(t,false))):emptyBox("ยังไม่มีรายการเดือนนี้","กดปุ่ม + ด้านล่างเพื่อจดรายการแรก")));
+  return out;
+}
+function accCard(a,onclick,selected,badge){
+  return h(onclick?"button":"div",{type:onclick?"button":null,class:"acc"+(selected?" sel":""),style:"background:var("+(a.color||"--p3")+")",onclick},
+    badge?h("span",{class:"badge"},badge):null,
+    h("span",{class:"n"},accIcon(a),a.name),
+    h("span",{class:"s"},[a.kind,a.bank&&a.bank!==a.name&&"บัตร "+a.bank!==a.name?a.bank:null,a.number?"••"+a.number:null].filter(Boolean).join(" · ")),
+    h("span",{class:"b"},fmtS(balanceOf(a.id))));
+}
+function emptyBox(t,s){return h("div",{class:"empty"},h("strong",null,t),h("span",{class:"small"},s))}
+function byNewest(a,b){return a.date===b.date?(b.createdAt||0)-(a.createdAt||0):a.date<b.date?1:-1}
+
+/* ---------- history ---------- */
+function historyView(){
+  const {y,m}=UI.ym,f=UI.filt;const rows=inMonth(y,m);
+  const list=rows.filter(t=>(!f.type||t.type===f.type)&&(!f.who||t.who===f.who)&&(!f.acc||t.acc===f.acc||t.toAcc===f.acc)).sort(byNewest);
+  const sel=(id,val,opts,onch)=>h("select",{id,"aria-label":opts[0][1],onchange:e=>{onch(e.target.value);renderAll()}},opts.map(([v,l])=>h("option",{value:v,selected:v===val?true:null},l)));
+  const card=h("section",{class:"card"},h("h2",null,"รายการเดือน"+TH_MONTHS[m]),
+    h("div",{class:"filters"},
+      sel("q-type",f.type,[["","ทุกประเภท"],["expense","รายจ่าย"],["income","รายรับ"],["transfer","โอน"]],v=>f.type=v),
+      sel("q-who",f.who,[["","ทุกคน"],...S.lists.members.map(x=>[x,x])],v=>f.who=v),
+      sel("q-acc",f.acc,[["","ทุกช่องทาง"],...sortedAccounts().map(a=>[a.id,a.name]),["cash","เงินสด"]],v=>f.acc=v)));
+  if(!list.length){card.append(rows.length?emptyBox("ไม่พบรายการตามตัวกรอง","ลองเปลี่ยนตัวกรองด้านบน"):emptyBox("ยังไม่มีรายการเดือนนี้","กดปุ่ม + ด้านล่างเพื่อจดรายการ"));return [card]}
+  const byDay={};list.forEach(t=>{(byDay[t.date]=byDay[t.date]||[]).push(t)});
+  Object.keys(byDay).forEach(day=>{const d=new Date(day+"T00:00:00");
+    const net=byDay[day].reduce((s,t)=>s+(t.type==="income"?1:t.type==="expense"?-1:0)*(Number(t.amount)||0),0);
+    card.append(h("div",{class:"day"},h("h3",null,h("span",null,"วัน"+TH_DAYS[d.getDay()]+" "+d.getDate()+" "+TH_SHORT[d.getMonth()]),h("span",{class:"num"},(net<0?"−":"+")+fmt(Math.abs(net)))),
+      byDay[day].map(t=>itemEl(t,true))));});
+  return [card];
+}
+function itemEl(t,withOps){
+  const isT=t.type==="transfer";
+  const bg=t.type==="income"?colorOf(t.cat,S.lists.incomeSources):t.type==="expense"?colorOf(t.cat,S.lists.expenseCats):"var(--p3)";
+  const label=t.type==="income"?"รับ":t.type==="expense"?"จ่าย":"โอน";
+  const meta=isT?accName(t.acc)+" → "+accName(t.toAcc):t.type==="income"?[t.who&&"ของ "+t.who,"เข้า "+accName(t.acc)].filter(Boolean).join(" · "):[t.who&&"ของ "+t.who,"จ่ายด้วย "+accName(t.acc)].filter(Boolean).join(" · ");
+  const sign=t.type==="income"?"+":t.type==="expense"?"−":"";
+  const el=h("div",{class:"item"},h("span",{class:"ico",style:"background:"+bg},label),
+    h("div",{style:"min-width:0"},h("div",{class:"what"},isT?"โอนเงิน":t.cat||"-"),h("div",{class:"meta"},meta+(t.note?" · "+t.note:""))),
+    h("div",{class:"amt "+t.type},sign+fmt(t.amount)));
+  if(withOps){
+    const confirming=UI.pendingDelete===t.id;
+    el.append(h("div",{class:"ops"},
+      h("button",{type:"button",onclick:()=>startEdit(t)},"แก้ไข"),
+      h("button",{type:"button",class:confirming?"danger":null,onclick:async()=>{
+        if(!confirming){UI.pendingDelete=t.id;renderAll();setTimeout(()=>{if(UI.pendingDelete===t.id){UI.pendingDelete=null;renderAll()}},4000);return}
+        UI.pendingDelete=null;try{await store.del("txns",t.id);toast("ลบรายการแล้ว")}catch(e){toast(failMsg(e))}}},confirming?"กดอีกครั้งเพื่อลบ":"ลบ")));
+  }
+  return el;
+}
+
+/* ---------- add: everything on one page ---------- */
+const lastUsed=()=>lsGet("last",{});
+function freshWizard(type){const l=lastUsed();return {type,amount:"",cat:null,who:l.who||null,acc:l.acc||null,toAcc:null,date:todayStr(),note:"",editingId:null,createdAt:null,adding:null}}
+function startEdit(t){wz={type:t.type,amount:String(t.amount),cat:t.cat||null,who:t.who||null,acc:t.acc||null,toAcc:t.toAcc||null,date:t.date,note:t.note||"",editingId:t.id,createdAt:t.createdAt||Date.now(),adding:null};UI.justSaved=null;UI.tab="add";renderAll();window.scrollTo(0,0)}
+function wzMissing(){
+  const amount=parseFloat(wz.amount),m=[];
+  if(!(amount>0))m.push("จำนวนเงิน");
+  if(wz.type!=="transfer"&&!wz.cat)m.push(wz.type==="income"?"ได้จากไหน":"จ่ายค่าอะไร");
+  if(!accById(wz.acc))m.push(wz.type==="transfer"?"บัญชีต้นทาง":"บัญชี");
+  if(wz.type==="transfer"&&(!accById(wz.toAcc)||wz.toAcc===wz.acc))m.push("บัญชีปลายทาง");
+  return m;
+}
+function updateSaveState(){const b=$("wz-save"),n=$("wz-miss");if(!b)return;const m=wzMissing();b.disabled=m.length>0;if(n)n.textContent=m.length?"ยังขาด: "+m.join(", "):""}
+function pills(items,current,colorFn,onpick,addKey,badgeFor){
+  const wrap=h("div",{class:"pills"},items.map(([val,label])=>h("button",{type:"button",class:"pill"+(val===current?" sel":""),style:"background:"+colorFn(val),"aria-pressed":String(val===current),onclick:()=>onpick(val)},
+    label,badgeFor&&badgeFor(val)?h("small",null," · "+badgeFor(val)):null)));
+  if(addKey)wrap.append(h("button",{type:"button",class:"pill plain",onclick:()=>{wz.adding=wz.adding===addKey?null:addKey;renderAll();const el=$("wz-add-"+addKey);if(el)el.focus()}},wz.adding===addKey?"ปิด":"+ เพิ่ม"));
+  return wrap;
+}
+function group(label,body,extra){return h("div",{class:"grp"},h("div",{class:"grp-label"},label),body,extra||null)}
+function addView(){
+  const t=wz.type,out=[];
+  if(UI.justSaved)out.push(h("div",{class:"done",role:"status"},"✓ บันทึกแล้ว: "+UI.justSaved));
+  const card=h("section",{class:"card"});
+  card.append(h("h2",null,wz.editingId?"แก้ไขรายการ":"จดรายการ"));
+  const typeBtn=(v,cls,l)=>h("button",{type:"button",class:cls,"aria-pressed":String(t===v),disabled:wz.editingId?true:null,onclick:()=>{wz.type=v;wz.cat=null;wz.toAcc=null;wz.adding=null;renderAll()}},l);
+  card.append(h("div",{class:"seg"},typeBtn("expense","e","− รายจ่าย"),typeBtn("income","i","+ รายรับ"),typeBtn("transfer","t","⇄ โอน")));
+  card.append(h("div",{class:"amount-box"},h("span",null,"฿"),h("input",{id:"wz-amount",type:"number",inputmode:"decimal",step:"0.01",min:"0",placeholder:"0","aria-label":"จำนวนเงิน (บาท)",value:wz.amount,
+    oninput:e=>{wz.amount=e.target.value;if(UI.justSaved){UI.justSaved=null;const d=document.querySelector(".done");if(d)d.remove()}updateSaveState()}})));
+  const accItems=excl=>[...sortedAccounts(),CASH].filter(a=>a.id!==excl).map(a=>[a.id,[accIcon(a,"sm"),a.name]]);
+  const accColorFn=id=>accColor(id);
+  const lastAcc=lastUsed().acc,lastWho=lastUsed().who;
+  const addRow=(key,ph,onadd)=>wz.adding===key?inlineAdd("wz-add-"+key,ph,onadd):null;
+  const accAdd=field=>wz.adding===field?accQuickAdd(field):null;
+  const noAcc=h("p",{class:"small muted"},"กด + เพิ่ม เพื่อบันทึกบัญชีธนาคาร บัตรเครดิต หรือ e-Wallet");
+  if(t==="transfer"){
+    const from=accItems(null),to=accItems(wz.acc);
+    card.append(group("โอนออกจาก",from.length?pills(from,wz.acc,accColorFn,v=>{wz.acc=v;if(wz.toAcc===v)wz.toAcc=null;renderAll()},"acc"):h("div",null,noAcc,pills([],null,accColorFn,()=>{},"acc")),accAdd("acc")));
+    card.append(group("โอนเข้า",pills(to,wz.toAcc,accColorFn,v=>{wz.toAcc=v;renderAll()},"toAcc"),accAdd("toAcc")));
+  }else{
+    const key=t==="income"?"incomeSources":"expenseCats";
+    card.append(group(t==="income"?"ได้เงินจากไหน":"จ่ายค่าอะไร",
+      pills(S.lists[key].map(v=>[v,v]),wz.cat,v=>colorOf(v,S.lists[key]),v=>{wz.cat=v;renderAll()},"cat"),
+      addRow("cat",t==="income"?"เช่น ขายของออนไลน์":"เช่น ค่าขนมลูก",v=>{if(addToList(key,v)||S.lists[key].includes(v)){wz.cat=v;wz.adding=null;renderAll()}})));
+    const m=S.lists.members;
+    card.append(group(t==="income"?"รายได้ของใคร":"ของใคร",
+      pills([...m.map(v=>[v,v]),["","ไม่ระบุ"]],wz.who||"",v=>v?colorOf(v,m):"var(--bg)",v=>{wz.who=v||null;renderAll()},"who",v=>v&&v===lastWho&&v!==wz.who?"ล่าสุด":null),
+      addRow("who","เช่น บ้านหลัก, แม่",v=>{if(addToList("members",v)||m.includes(v)){wz.who=v;wz.adding=null;renderAll()}})));
+    const items=accItems(null);
+    card.append(group(t==="income"?"เข้าบัญชีไหน":"จ่ายจากบัญชีไหน",
+      items.length?pills(items,wz.acc,accColorFn,v=>{wz.acc=v;renderAll()},"acc",v=>v===lastAcc&&v!==wz.acc?"ล่าสุด":null):h("div",null,noAcc,pills([],null,accColorFn,()=>{},"acc")),
+      accAdd("acc")));
+  }
+  card.append(h("div",{class:"row2"},
+    h("div",{class:"field"},h("label",{for:"wz-date"},"วันที่"),h("input",{id:"wz-date",type:"date",value:wz.date,onchange:e=>{wz.date=e.target.value||todayStr()}})),
+    h("div",{class:"field"},h("label",{for:"wz-note"},"บันทึกเพิ่ม (ไม่บังคับ)"),h("input",{id:"wz-note",value:wz.note,placeholder:"เช่น ค่าไฟเดือน ก.ย.",oninput:e=>{wz.note=e.target.value}}))));
+  const miss=wzMissing();
+  card.append(h("button",{type:"button",class:"btn primary block big",id:"wz-save",disabled:miss.length?true:null,onclick:saveWizard},wz.editingId?"บันทึกการแก้ไข":"บันทึก"));
+  card.append(h("p",{class:"small muted",id:"wz-miss",style:"text-align:center;min-height:1.2em"},miss.length?"ยังขาด: "+miss.join(", "):""));
+  out.push(card);
+  if(wz.editingId)out.push(h("button",{type:"button",class:"btn ghost",onclick:()=>{wz=freshWizard(wz.type);go("history")}},"ยกเลิกการแก้ไข"));
+  if(UI.focusAmount){UI.focusAmount=false;setTimeout(()=>{const el=$("wz-amount");if(el)el.focus({preventScroll:true})},0)}
+  return out;
+}
+function inlineAdd(id,placeholder,onadd){
+  const inp=h("input",{id,placeholder,autocomplete:"off",onkeydown:e=>{if(e.key==="Enter"){e.preventDefault();go2()}}});
+  const go2=()=>{const v=inp.value.trim();if(v)onadd(v)};
+  return h("div",{class:"addline"},inp,h("button",{type:"button",class:"btn",onclick:go2},"เพิ่ม"));
+}
+function accQuickAdd(field){
+  const q=UI.quickAcc=UI.quickAcc||{kind:"บัญชีธนาคาร",bank:"",name:""};
+  return h("div",{class:"quick"},
+    h("div",{class:"pills"},
+      ACC_KINDS.map(k=>h("button",{type:"button",class:"pill"+(q.kind===k?" sel":""),style:"background:var(--p3)","aria-pressed":String(q.kind===k),onclick:()=>{if(q.kind!==k){q.kind=k;q.bank=""}renderAll()}},k)),
+      null),q.kind==="เงินสด"||q.kind==="บัตรเครดิต"?null:bankPicker(q.kind,q.bank,v=>{q.bank=v;renderAll()}),
+    q.kind==="บัตรเครดิต"?h("input",{id:"wz-qa-num",placeholder:"เลขบัตร 4 ตัวท้าย (ไม่บังคับ)",inputmode:"numeric",maxlength:"4",value:q.number||"",oninput:e=>{q.number=e.target.value}}):null,
+    h("div",{class:"addline"},h("input",{id:"wz-qa-name",placeholder:q.kind==="บัตรเครดิต"?"ชื่อบัตร เช่น บัตรเติมน้ำมัน":"ชื่อเรียก (ไม่บังคับ) เช่น ของแม่",value:q.name,oninput:e=>{q.name=e.target.value}}),
+      h("button",{type:"button",class:"btn",onclick:async()=>{
+        const a=buildAccount({kind:q.kind,bank:q.bank,name:q.name,number:q.number||"",opening:0,color:PAL[S.accounts.length%PAL.length]});
+        if(!a){toast(needMsg(q.kind));return}
+        try{await store.put("accounts",a);wz[field]=a.id;wz.adding=null;UI.quickAcc=null;renderAll();toast("เพิ่ม "+a.name+" แล้ว")}catch(e){toast(failMsg(e))}}},"บันทึก")));
+}
+async function saveWizard(){
+  if(wzMissing().length)return;
+  const amount=Math.round(parseFloat(wz.amount)*100)/100;
+  const t={id:wz.editingId||store.mint("txns"),type:wz.type,date:wz.date||todayStr(),amount,acc:wz.acc,note:(wz.note||"").trim(),createdAt:wz.createdAt||Date.now()};
+  if(wz.type==="transfer"){t.toAcc=wz.toAcc}else{t.cat=wz.cat;t.who=wz.who||""}
+  const btn=$("wz-save");if(btn)btn.disabled=true;
+  const wasEdit=!!wz.editingId;
+  try{
+    await store.put("txns",t);
+    lsSet("last",{who:t.who||lastUsed().who||null,acc:t.acc});
+    const d=t.date.split("-");UI.ym={y:+d[0],m:+d[1]-1};
+    if(wasEdit){wz=freshWizard(t.type);toast("แก้ไขแล้ว");go("history")}
+    else{UI.justSaved=(t.type==="transfer"?"โอน ":(t.cat||"")+" ")+fmt(t.amount)+" · จดต่อได้เลย";const keepDate=t.date;wz=freshWizard(t.type);wz.date=keepDate;UI.focusAmount=true;renderAll();window.scrollTo(0,0)}
+  }catch(e){toast(failMsg(e));if(btn)btn.disabled=false}
+}
+
+/* ---------- year ---------- */
+function yearView(){
+  const y=UI.year,months=[];let ti=0,te=0;const cat={};
+  for(let m=0;m<12;m++){let i=0,e=0;inMonth(y,m).forEach(t=>{const a=Number(t.amount)||0;if(t.type==="income")i+=a;else if(t.type==="expense"){e+=a;cat[t.cat]=(cat[t.cat]||0)+a}});months.push([i,e]);ti+=i;te+=e}
+  const out=[h("section",{class:"totals"},
+    h("div",{class:"tot inc"},h("span",null,"รายรับทั้งปี"),h("b",null,fmt(ti))),
+    h("div",{class:"tot exp"},h("span",null,"รายจ่ายทั้งปี"),h("b",null,fmt(te))),
+    h("div",{class:"tot bal"},h("span",null,"เก็บได้ทั้งปี"),h("b",null,fmtS(ti-te))))];
+  out.push(h("section",{class:"card"},h("div",{class:"card-head"},h("h2",null,"รายรับ–รายจ่ายรายเดือน"),
+    h("div",{class:"legend"},h("span",null,h("i",{style:"background:var(--inc)"}),"รายรับ"),h("span",null,h("i",{style:"background:var(--exp)"}),"รายจ่าย"))),
+    h("div",{class:"chart-wrap",html:chartSVG(months)})));
+  out.push(h("section",{class:"card"},h("h2",null,"ตารางรายเดือน"),h("div",{class:"tbl-wrap"},h("table",null,
+    h("thead",null,h("tr",null,h("th",null,"เดือน"),h("th",null,"รายรับ"),h("th",null,"รายจ่าย"),h("th",null,"คงเหลือ"))),
+    h("tbody",null,months.map(([i,e],m)=>h("tr",null,h("td",null,TH_MONTHS[m]),h("td",{class:"num",style:"color:var(--inc)"},i?fmt(i):"–"),h("td",{class:"num",style:"color:var(--exp)"},e?fmt(e):"–"),h("td",{class:"num"},i||e?fmtS(i-e):"–"))))))));
+  out.push(h("section",{class:"card"},h("h2",null,"ทั้งปีจ่ายค่าอะไรมากที่สุด"),barsEl(cat,te,k=>colorOf(k,S.lists.expenseCats))));
+  return out;
+}
+function niceMax(v){if(v<=0)return 1000;const p=Math.pow(10,Math.floor(Math.log10(v)));const n=v/p;return (n<=1?1:n<=2?2:n<=2.5?2.5:n<=5?5:10)*p}
+const compact=v=>v>=1e6?(v/1e6).toLocaleString("th-TH",{maximumFractionDigits:1})+"M":v>=1e3?(v/1e3).toLocaleString("th-TH",{maximumFractionDigits:1})+"k":String(v);
+function chartSVG(months){
+  const W=640,H=250,pl=48,pr=10,pt=12,pb=28,cw=W-pl-pr,ch=H-pt-pb;
+  const max=niceMax(Math.max(...months.flat(),0));const ys=v=>pt+ch-(v/max)*ch;
+  let s='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="กราฟรายรับรายจ่ายรายเดือน">';
+  for(let k=0;k<=4;k++){const v=max*k/4,y=ys(v);s+='<line class="grid-line" x1="'+pl+'" x2="'+(W-pr)+'" y1="'+y+'" y2="'+y+'"/><text x="'+(pl-6)+'" y="'+(y+4)+'" text-anchor="end">'+compact(v)+'</text>'}
+  const gw=cw/12,bw=Math.min(16,gw*0.32);
+  months.forEach(([i,e],m)=>{const cx=pl+gw*m+gw/2;
+    if(i>0)s+='<rect class="b-inc" rx="4" x="'+(cx-bw-1)+'" y="'+ys(i)+'" width="'+bw+'" height="'+(pt+ch-ys(i))+'"><title>'+TH_MONTHS[m]+' รายรับ '+fmt(i)+'</title></rect>';
+    if(e>0)s+='<rect class="b-exp" rx="4" x="'+(cx+1)+'" y="'+ys(e)+'" width="'+bw+'" height="'+(pt+ch-ys(e))+'"><title>'+TH_MONTHS[m]+' รายจ่าย '+fmt(e)+'</title></rect>';
+    s+='<text x="'+cx+'" y="'+(H-8)+'" text-anchor="middle">'+TH_SHORT[m]+'</text>'});
+  return s+'</svg>';
+}
+
+/* ---------- settings ---------- */
+function newAcctDraft(a){return a?Object.assign({},a,{opening:String(a.opening??0)}):{id:null,name:"",kind:"บัญชีธนาคาร",bank:"",number:"",opening:"",color:PAL[S.accounts.length%PAL.length]}}
+function settingsView(){
+  const p=UI.setPage;
+  if(!p){
+    const mi=(page,icon,bg,t,d)=>h("button",{type:"button",onclick:()=>{UI.setPage=page;UI.acctDraft=null;UI.budgetDraft=null;renderAll();window.scrollTo(0,0)}},
+      h("span",{class:"mi",style:"background:var("+bg+")"},icon),h("span",null,h("div",{class:"mt"},t),h("div",{class:"md"},d)),h("span",{class:"arrow"},"›"));
+    return [h("section",{class:"card"},h("h2",null,"ตั้งค่า"),h("div",{class:"menu"},
+      mi("accounts","฿","--p3","ช่องทางจ่ายเงินที่บันทึกไว้",S.accounts.length?S.accounts.length+" รายการ · บัญชีธนาคาร บัตรเครดิต e-Wallet":"เพิ่มบัญชีธนาคาร บัตรเครดิต หรือ e-Wallet"),
+      mi("members","☺","--p1","คนในบ้าน",S.lists.members.length?S.lists.members.join(", "):"ยังไม่มีรายชื่อ"),
+      mi("budgets","◎","--p5","งบรายเดือน","ตั้งงบให้แต่ละหมวด แล้วดูว่าใช้ไปเท่าไหร่"),
+      mi("expenseCats","▤","--p6","หมวดรายจ่าย",S.lists.expenseCats.length+" หมวด"),
+      mi("incomeSources","✦","--p4","แหล่งรายได้",S.lists.incomeSources.length+" แหล่ง"),
+      store.mode==="db"?null:mi("sheet","▦","--p4","เชื่อม Google Sheets",store.mode==="sheet"?"เชื่อมแล้ว · ข้อมูลอยู่ในชีต":"ยังไม่ได้เชื่อม · ข้อมูลอยู่ในเครื่องนี้"),
+      mi("export","⇩","--p2","ส่งออก Excel","ดาวน์โหลดรายการเป็นไฟล์ .xlsx")))];
+  }
+  const back=h("button",{type:"button",class:"btn ghost",style:"align-self:flex-start;padding-left:0",onclick:()=>{UI.setPage=null;UI.acctDraft=null;renderAll()}},"‹ กลับไปหน้าตั้งค่า");
+  return [back,...SETPAGES[p]()];
+}
+function listPage(key,title,hint,ph){
+  const items=S.lists[key];
+  return [h("section",{class:"card"},h("h2",null,title),h("p",{class:"small muted"},hint),
+    items.length?h("div",{class:"tags"},items.map(v=>h("span",{class:"tag",style:"background:"+colorOf(v,items)},v,
+      h("button",{type:"button","aria-label":"ลบ "+v,onclick:()=>removeFromList(key,v)},"×")))):h("p",{class:"small muted"},"ยังไม่มีรายการ"),
+    inlineAdd("add-"+key,ph,v=>{if(addToList(key,v)){const el=$("add-"+key);if(el)el.value="";toast("เพิ่ม "+v+" แล้ว")}}))];
+}
+const SETPAGES={
+  members:()=>listPage("members","คนในบ้าน","เพิ่มชื่อคนในบ้านเอง หรือใส่ “บ้านหลัก” ไว้สำหรับค่าใช้จ่ายส่วนกลาง การลบชื่อไม่กระทบรายการที่จดไปแล้ว","เช่น บ้านหลัก, แม่, น้องมิว"),
+  expenseCats:()=>listPage("expenseCats","หมวดรายจ่าย","หมวดที่เลือกได้ตอนจดรายจ่าย","เช่น ค่าขนมลูก"),
+  incomeSources:()=>listPage("incomeSources","แหล่งรายได้","แหล่งที่มาที่เลือกได้ตอนจดรายรับ","เช่น ขายของออนไลน์"),
+  accounts(){
+    const d=UI.acctDraft;
+    if(!d){
+      const list=sortedAccounts();
+      return [h("section",{class:"card"},h("h2",null,"ช่องทางจ่ายเงินที่บันทึกไว้"),
+        h("p",{class:"small muted"},"ตั้งชื่อบัญชีครั้งเดียว ตอนจดรายการก็แค่แตะเลือก ยอดเงินคำนวณให้อัตโนมัติจากยอดตั้งต้นและรายการที่จด"),
+        list.length?h("div",{class:"acc-row"},list.map(a=>accCard(a,()=>{UI.acctDraft=newAcctDraft(a);renderAll()}))):emptyBox("ยังไม่มีช่องทางจ่ายเงิน","เพิ่มบัญชีธนาคาร บัตรเครดิต หรือ e-Wallet ได้จากปุ่มด้านล่าง · เงินสดมีให้เลือกอยู่แล้ว"),
+        list.length?h("p",{class:"small muted"},"แตะที่บัญชีเพื่อแก้ไข"):null,
+        h("button",{type:"button",class:"btn primary block",onclick:()=>{UI.acctDraft=newAcctDraft();renderAll()}},"+ เพิ่มบัญชี / บัตร / e-Wallet"))];
+    }
+    const f=(id,label,el)=>h("div",{class:"field"},h("label",{for:id},label),el);
+    const inp=(id,key,attrs)=>h("input",Object.assign({id,value:d[key],oninput:e=>{d[key]=e.target.value}},attrs||{}));
+    const used=d.id&&S.txns.some(t=>t.acc===d.id||t.toAcc===d.id);
+    return [h("section",{class:"card"},h("h2",null,d.id?"แก้ไขช่องทางจ่ายเงิน":"เพิ่มช่องทางจ่ายเงิน"),
+      h("div",{class:"field"},h("label",null,"ประเภท"),h("div",{class:"pills"},ACC_KINDS.map(k=>h("button",{type:"button",class:"pill"+(d.kind===k?" sel":""),style:"background:var(--p3)","aria-pressed":String(d.kind===k),onclick:()=>{if(d.kind!==k){d.kind=k;d.bank=""}renderAll()}},k)))),
+      d.kind==="เงินสด"||d.kind==="บัตรเครดิต"?null:h("div",{class:"field"},h("label",null,d.kind==="e-Wallet"?"ผู้ให้บริการ":"ธนาคาร"),bankPicker(d.kind,d.bank,v=>{d.bank=v;renderAll()})),
+      d.kind==="บัตรเครดิต"?f("a-name","ชื่อบัตร",inp("a-name","name",{placeholder:"เช่น บัตรเติมน้ำมัน"})):f("a-name","ชื่อเรียก (ไม่บังคับ · เว้นว่างจะใช้ชื่อธนาคาร)",inp("a-name","name",{placeholder:"เช่น กสิกรของแม่"})),
+      h("div",{class:"row2"},
+        f("a-num",d.kind==="บัตรเครดิต"?"เลขบัตร 4 ตัวท้าย (ไม่บังคับ)":"เลขบัญชี 4 ตัวท้าย (ไม่บังคับ)",inp("a-num","number",{placeholder:"เช่น 1234",inputmode:"numeric",maxlength:"4"})),
+        f("a-open","ยอดเงินตั้งต้น (บาท)",inp("a-open","opening",{type:"number",inputmode:"decimal",step:"0.01",placeholder:"0"}))),
+      h("p",{class:"small muted"},"ใส่แค่ 4 ตัวท้ายพอ ไว้ดูว่าเป็นบัญชีไหน ไม่ต้องใส่เลขเต็ม · บัตรเครดิตใส่ยอดตั้งต้น 0 แล้วยอดจะติดลบตามที่ใช้"),
+      h("div",{class:"field"},h("label",null,"สีบัญชี"),h("div",{class:"swatches"},PAL.map(c=>h("button",{type:"button",class:"sw"+(d.color===c?" sel":""),style:"background:var("+c+")","aria-label":"เลือกสี",onclick:()=>{d.color=c;renderAll()}})))),
+      h("div",{class:"btns"},
+        h("button",{type:"button",class:"btn primary",onclick:async()=>{
+          const prev=d.id?accById(d.id):null;
+          const a=buildAccount(Object.assign({},d,{createdAt:prev&&prev.createdAt}));
+          if(!a){toast(needMsg(d.kind));return}
+          try{await store.put("accounts",a);UI.acctDraft=null;renderAll();toast("บันทึก "+a.name+" แล้ว")}catch(e){toast(failMsg(e))}}},"บันทึก"),
+        h("button",{type:"button",class:"btn",onclick:()=>{UI.acctDraft=null;renderAll()}},"ยกเลิก")),
+      d.id?h("button",{type:"button",class:"btn danger",onclick:async()=>{
+        if(!d.confirmDel){d.confirmDel=true;renderAll();return}
+        try{await store.del("accounts",d.id);UI.acctDraft=null;renderAll();toast("ลบแล้ว")}catch(e){toast(failMsg(e))}}},
+        d.confirmDel?(used?"มีรายการที่ใช้ช่องทางนี้อยู่ กดอีกครั้งเพื่อยืนยันลบ":"กดอีกครั้งเพื่อยืนยันลบ"):"ลบช่องทางนี้"):null)];
+  },
+  budgets(){
+    if(!UI.budgetDraft){UI.budgetDraft={};for(const c of S.lists.expenseCats){const v=S.budgets.cats&&S.budgets.cats[c];UI.budgetDraft[c]=v?String(v):""}}
+    const d=UI.budgetDraft;
+    return [h("section",{class:"card"},h("h2",null,"งบรายเดือน"),
+      h("p",{class:"small muted"},"ใส่งบต่อเดือนเฉพาะหมวดที่อยากคุม เว้นว่างไว้ถ้าไม่ต้องการ หน้าแรกจะแสดงว่าใช้ไปเท่าไหร่ และเตือนเมื่อใช้เกิน 80%"),
+      S.lists.expenseCats.map((c,i)=>h("div",{class:"budget-row"},h("label",{for:"b-"+i},c),
+        h("input",{id:"b-"+i,type:"number",inputmode:"decimal",min:"0",step:"100",placeholder:"ไม่ตั้งงบ",value:d[c]||"",oninput:e=>{d[c]=e.target.value}}))),
+      h("button",{type:"button",class:"btn primary block",onclick:async()=>{
+        const cats={};for(const c in d){const v=Number(d[c]);if(v>0)cats[c]=v}
+        await store.setDoc("budgets",{cats});UI.budgetDraft=null;toast("บันทึกงบแล้ว");UI.setPage=null;go("home")}},"บันทึกงบ"))];
+  },
+  sheet(){
+    const d=UI.sheetDraft=UI.sheetDraft||Object.assign({url:"",key:"",push:true},lsGet("sheet",{}));
+    const hasLocal=lsGet("txns",[]).length>0||lsGet("accounts",[]).length>0;
+    const f=(id,label,el)=>h("div",{class:"field"},h("label",{for:id},label),el);
+    return [h("section",{class:"card"},h("h2",null,"เชื่อม Google Sheets"),
+      h("p",{class:"small muted"},"วางลิงก์ Web App ของ Apps Script และรหัสเชื่อมต่อที่ตั้งไว้ (ดูวิธีทำในไฟล์ วิธีติดตั้ง) ใส่ครั้งเดียวต่อเครื่อง"),
+      f("s-url","ลิงก์ Web App (ลงท้ายด้วย /exec)",h("input",{id:"s-url",value:d.url,placeholder:"https://script.google.com/macros/s/…/exec",autocomplete:"off",oninput:e=>{d.url=e.target.value.trim()}})),
+      f("s-key","รหัสเชื่อมต่อ",h("input",{id:"s-key",type:"password",value:d.key,autocomplete:"off",oninput:e=>{d.key=e.target.value.trim()}})),
+      store.mode!=="sheet"&&hasLocal?h("label",{class:"small",style:"display:flex;gap:8px;align-items:center"},
+        h("input",{type:"checkbox",id:"s-push",style:"width:auto",checked:d.push?true:null,onchange:e=>{d.push=e.target.checked}}),
+        "ย้ายข้อมูลที่จดไว้ในเครื่องนี้ขึ้นชีตด้วย (เฉพาะตอนที่ชีตยังว่าง)"):null,
+      h("button",{type:"button",class:"btn primary block",onclick:async e=>{
+        if(!/^https:\/\/script\.google\.com\/.+\/exec$/.test(d.url)){toast("ลิงก์ต้องขึ้นต้นด้วย https://script.google.com และลงท้ายด้วย /exec");return}
+        if(!d.key){toast("ใส่รหัสเชื่อมต่อก่อน");return}
+        e.target.disabled=true;e.target.textContent="กำลังทดสอบ…";
+        const sc={url:d.url,key:d.key};
+        try{
+          const j=await store.call({op:"all"},sc);
+          const empty=!(j.data.txns||[]).length&&!(j.data.accounts||[]).length;
+          if(hasLocal&&d.push&&empty&&store.mode!=="sheet"){
+            await store.call({op:"bulk",data:{txns:lsGet("txns",[]).map(t=>Object.assign({},t,{accName:accName(t.acc),toAccName:t.toAcc?accName(t.toAcc):""})),accounts:lsGet("accounts",[]),lists:S.lists,budgets:S.budgets}},sc);
+          }
+          lsSet("sheet",sc);toast("เชื่อมต่อสำเร็จ");setTimeout(()=>location.reload(),600);
+        }catch(err){toast(failMsg(err)+(err&&err.code&&err.code!=="network"&&err.code!=="bad_key"?" ("+err.code+")":""));e.target.disabled=false;e.target.textContent="ทดสอบและเชื่อมต่อ"}
+      }},"ทดสอบและเชื่อมต่อ"),
+      store.mode==="sheet"?h("button",{type:"button",class:"btn danger block",onclick:()=>{try{localStorage.removeItem("fl2-sheet")}catch(e){}location.reload()}},"เลิกเชื่อมต่อเครื่องนี้"):null)];
+  },
+  export(){
+    const {y,m}=UI.ym;
+    const can=true;
+    return [h("section",{class:"card"},h("h2",null,"ส่งออก Excel"),
+      h("p",{class:"small muted"},"ไฟล์ .xlsx มี 3 แผ่นงาน: รายการทั้งหมด, สรุปรายเดือน และยอดเงินแต่ละบัญชี"),
+      
+      h("button",{type:"button",class:"btn primary block",disabled:!can||null,onclick:()=>exportXlsx(t=>(t.date||"").slice(0,7)===monthKey(y,m),"บัญชีบ้านเรา-"+TH_MONTHS[m]+"-"+(y+543))},"เดือน"+TH_MONTHS[m]+" "+(y+543)),
+      h("button",{type:"button",class:"btn block",disabled:!can||null,onclick:()=>exportXlsx(t=>(t.date||"").slice(0,4)===String(y),"บัญชีบ้านเรา-ปี"+(y+543))},"ทั้งปี "+(y+543)),
+      h("button",{type:"button",class:"btn block",disabled:!can||null,onclick:()=>exportXlsx(()=>true,"บัญชีบ้านเรา-ทั้งหมด")},"ทุกรายการ"))];
+  }
+};
+function loadXLSX(){return window.XLSX?Promise.resolve(window.XLSX):new Promise((res,rej)=>{const s=document.createElement("script");s.src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js";s.onload=()=>res(window.XLSX);s.onerror=rej;document.head.appendChild(s)})}
+async function exportXlsx(filter,name){
+  const rows=S.txns.filter(filter).sort((a,b)=>a.date<b.date?-1:a.date>b.date?1:(a.createdAt||0)-(b.createdAt||0));
+  if(!rows.length){toast("ไม่มีรายการในช่วงนี้");return}
+  toast("กำลังเตรียมไฟล์…");
+  let X;try{X=await loadXLSX()}catch(e){toast("โหลดตัวสร้างไฟล์ไม่สำเร็จ ลองอีกครั้ง");return}
+  const sheet1=[["วันที่","ประเภท","จำนวนเงิน","หมวด / แหล่งที่มา","ของใคร","บัญชี","โอนเข้าบัญชี","บันทึก"]];
+  rows.forEach(t=>sheet1.push([t.date,TYPE_TH[t.type],Number(t.amount)||0,t.cat||"",t.who||"",accName(t.acc),t.type==="transfer"?accName(t.toAcc):"",t.note||""]));
+  const bym={};rows.forEach(t=>{const k=t.date.slice(0,7);bym[k]=bym[k]||[0,0];if(t.type==="income")bym[k][0]+=Number(t.amount)||0;else if(t.type==="expense")bym[k][1]+=Number(t.amount)||0});
+  const sheet2=[["เดือน","รายรับ","รายจ่าย","คงเหลือ"]];Object.keys(bym).sort().forEach(k=>{const [yy,mm]=k.split("-");sheet2.push([TH_MONTHS[+mm-1]+" "+(+yy+543),bym[k][0],bym[k][1],bym[k][0]-bym[k][1]])});
+  const sheet3=[["บัญชี","ประเภท","ธนาคาร","4 ตัวท้าย","ยอดตั้งต้น","ยอดปัจจุบัน"]];sortedAccounts().forEach(a=>sheet3.push([a.name,a.kind||"",a.bank||"",a.number||"",Number(a.opening)||0,balanceOf(a.id)]));
+  const wb=X.utils.book_new();
+  const add=(aoa,n,cols)=>{const ws=X.utils.aoa_to_sheet(aoa);ws["!cols"]=cols.map(w=>({wch:w}));X.utils.book_append_sheet(wb,ws,n)};
+  add(sheet1,"รายการ",[12,16,12,24,14,20,20,30]);add(sheet2,"สรุปรายเดือน",[18,14,14,14]);add(sheet3,"ยอดแต่ละบัญชี",[22,14,16,10,14,14]);
+  const buf=X.write(wb,{type:"array",bookType:"xlsx"});
+  if(!downloadsNs){const u=URL.createObjectURL(new Blob([buf],{type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}));const a=document.createElement("a");a.href=u;a.download=name+".xlsx";document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),4000);toast("ดาวน์โหลดแล้ว");return}
+  try{await downloadsNs.save({filename:name+".xlsx",data:new Blob([buf])});toast("ส่งไฟล์ให้ดาวน์โหลดแล้ว")}
+  catch(e){toast(e&&e.code==="declined"?"ยกเลิกการดาวน์โหลด":"ดาวน์โหลดไม่สำเร็จ ("+(e&&e.code||"error")+")")}
+}
+
+const VIEWS={home:homeView,history:historyView,add:addView,year:yearView,settings:settingsView};
+wz=freshWizard("expense");
+renderAll();
+store.init();
+})();
+</script>
+</body>
+</html>
